@@ -1,0 +1,44 @@
+﻿using GiftBagOfBases.Interfaces.Infra.Data;
+using GiftBagOfBases.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace GiftBagOfBases.Repositories
+{
+    public abstract class QueryOnlyRepository<TEntity, TContext> : IQueryOnlyRepository<TEntity> where TEntity : Entity where TContext : DbContext
+    {
+        protected readonly TContext Db;
+        protected readonly DbSet<TEntity> DbSet;
+
+        protected QueryOnlyRepository(TContext db)
+        {
+            Db = db;
+        }
+
+        public void Dispose()
+        {
+            Db.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        public IQueryable<TEntity> GetAll()
+        {
+            return DbSet;
+        }
+
+        public Task<TEntity> GetByAggregateId(Guid aggregateId)
+        {
+            return DbSet
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == aggregateId);
+        }
+
+        public Task<bool> ExistAggregateId(Guid aggregateId)
+        {
+            return DbSet
+                .AnyAsync(x => x.Id == aggregateId);
+        }
+    }
+}
