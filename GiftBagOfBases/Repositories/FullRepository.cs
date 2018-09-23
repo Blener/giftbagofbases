@@ -2,14 +2,15 @@
 using GiftBagOfBases.Models;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace GiftBagOfBases.Repositories
 {
     public class FullRepository<TEntity> : IFullRepository<TEntity> where TEntity : Entity
     {
-        protected readonly IQueryOnlyRepository<TEntity> queryOnlyRepository;
         protected readonly ICommandOnlyRepository<TEntity> commandOnlyRepository;
+        protected readonly IQueryOnlyRepository<TEntity> queryOnlyRepository;
 
         protected FullRepository(IQueryOnlyRepository<TEntity> queryOnlyRepository, ICommandOnlyRepository<TEntity> commandOnlyRepository)
         {
@@ -38,14 +39,24 @@ namespace GiftBagOfBases.Repositories
             return queryOnlyRepository.ExistAggregateId(aggregateId);
         }
 
+        public Task<TEntity> Get(Guid aggregateId)
+        {
+            return queryOnlyRepository.Get(aggregateId);
+        }
+
+        public Task<TEntity> Get(Expression<Func<TEntity, bool>> wherePredicate)
+        {
+            return queryOnlyRepository.Get(wherePredicate);
+        }
+
         public IQueryable<TEntity> GetAll()
         {
             return queryOnlyRepository.GetAll();
         }
 
-        public Task<TEntity> GetByAggregateId(Guid aggregateId)
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> wherePredicate)
         {
-            return queryOnlyRepository.GetByAggregateId(aggregateId);
+            return queryOnlyRepository.GetAll(wherePredicate);
         }
 
         public Task Remove(Guid id)

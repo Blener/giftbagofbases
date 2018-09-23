@@ -3,6 +3,7 @@ using GiftBagOfBases.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace GiftBagOfBases.Repositories
@@ -28,16 +29,24 @@ namespace GiftBagOfBases.Repositories
             return DbSet;
         }
 
-        public Task<TEntity> GetByAggregateId(Guid aggregateId)
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> wherePredicate)
         {
-            return DbSet
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == aggregateId);
+            return GetAll().Where(wherePredicate);
+        }
+
+        public Task<TEntity> Get(Expression<Func<TEntity, bool>> wherePredicate)
+        {
+            return DbSet.FirstOrDefaultAsync(wherePredicate);
+        }
+
+        public Task<TEntity> Get(Guid aggregateId)
+        {
+            return Get(x => x.Id == aggregateId);
         }
 
         public Task<bool> ExistAggregateId(Guid aggregateId)
         {
-            return DbSet
+            return GetAll()
                 .AnyAsync(x => x.Id == aggregateId);
         }
     }

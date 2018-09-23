@@ -1,8 +1,8 @@
 ﻿namespace GiftBagOfBases.Models
 {
-    public abstract class SoftDeleteEntity<T> : Entity where T : Entity, new()
+    public abstract class SoftDeleteEntity<T> : Entity where T : Entity
     {
-        public bool SoftDeleted { get; set; }
+        public bool SoftDeleted { get; protected set; }
 
         protected bool Deleted => true;
 

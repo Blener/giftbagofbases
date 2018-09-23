@@ -1,33 +1,65 @@
 ﻿using AutoMapper;
+using GiftBagOfBases.Commands;
 using GiftBagOfBases.Interfaces.Application;
 using GiftBagOfBases.Interfaces.Domain;
+using GiftBagOfBases.Interfaces.Infra.Data;
 using GiftBagOfBases.Models;
 using GiftBagOfBases.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GiftBagOfBases.Services.Application
 {
-    public abstract class AppFullService<TViewModel, TEntity> : AppCommandOnlyService<TViewModel>, IAppQueryOnlyService<TViewModel>
+    public abstract class AppFullService<TViewModel, TEntity> : IAppCommandOnlyService<TViewModel>, IAppQueryOnlyService<TViewModel>
         where TViewModel : GiftViewModel
         where TEntity : Entity
     {
-        protected readonly AppQueryOnlyService<TEntity, TViewModel> appQueryOnlyService;
+        protected readonly IQueryOnlyRepository<TEntity> queryRepository;
+        protected readonly IMediatorHandler bus;
+        protected readonly IMapper mapper;
 
-        protected AppFullService(IMediatorHandler bus, IMapper mapper, AppQueryOnlyService<TEntity, TViewModel> appQueryOnlyService) : base(bus, mapper)
+        protected AppFullService(IQueryOnlyRepository<TEntity> queryRepository, IMediatorHandler bus, IMapper mapper)
         {
-            this.appQueryOnlyService = appQueryOnlyService;
+            this.queryRepository = queryRepository;
+            this.bus = bus;
+            this.mapper = mapper;
         }
 
         public IEnumerable<TViewModel> GetAll()
         {
-            return appQueryOnlyService.GetAll();
+            return MapGetForReturn(queryRepository.GetAll());
         }
 
-        public Task<TViewModel> GetByAggregateId(Guid aggregateId)
+        public async Task<TViewModel> GetByAggregateId(Guid aggregateId)
         {
-            return appQueryOnlyService.GetByAggregateId(aggregateId);
+            return MapGetForReturn(await queryRepository.Get(aggregateId));
         }
+
+        protected TViewModel MapGetForReturn(TEntity entity) => mapper.Map<TViewModel>(entity);
+
+        protected IEnumerable<TViewModel> MapGetForReturn(IQueryable<TEntity> entityQuery) => mapper.Map<IEnumerable<TViewModel>>(entityQuery);
+
+        public abstract void Add(TViewModel viewModel);
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+
+        public abstract void Remove(Guid aggregateId);
+
+        public abstract void Restore(Guid aggregateId);
+
+        public abstract void Update(TViewModel viewModel);
+
+        protected void MapAndSendCommand<TCommand>(TViewModel viewModel) where TCommand : Command => bus.SendCommand(mapper.Map<TCommand>(viewModel));
+
+        protected void MapAndSendCommand<TCommand>(Guid aggregateId) where TCommand : Command => bus.SendCommand(mapper.Map<TCommand>(aggregateId));
+
+        protected void MapAndSendCommand<TCommand, TMethodViewModel>(TMethodViewModel viewModel)
+            where TCommand : Command where TMethodViewModel : GiftViewModel
+            => bus.SendCommand(mapper.Map<TCommand>(viewModel));
     }
 }

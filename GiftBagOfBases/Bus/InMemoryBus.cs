@@ -21,7 +21,7 @@ namespace GiftBagOfBases.Bus
 
         public Task SendCommand<T>(T command) where T : Command
         {
-            if (command.IsValid())
+            if (!command.IsValid())
             {
                 command.NotifyValidationErrors(this);
                 return null;

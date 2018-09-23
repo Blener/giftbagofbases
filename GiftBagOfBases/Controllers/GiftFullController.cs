@@ -1,5 +1,4 @@
 ﻿using GiftBagOfBases.Interfaces.Application;
-using GiftBagOfBases.Models;
 using GiftBagOfBases.Notifications;
 using GiftBagOfBases.ViewModel;
 using MediatR;
@@ -9,15 +8,13 @@ using System.Threading.Tasks;
 
 namespace GiftBagOfBases.Controllers
 {
-    public abstract class GiftFullController<TViewModel, TEntity> : GiftApiController
-        where TViewModel : GiftViewModel
-        where TEntity : Entity
+    public abstract class GiftFullController<TViewModel> : GiftApiController where TViewModel : GiftViewModel
     {
-        protected readonly IAppFullService<TViewModel, TEntity> appFullService;
+        protected readonly IAppFullService<TViewModel> appFullService;
 
         protected GiftFullController(
             INotificationHandler<DomainNotification> notifications,
-            IAppFullService<TViewModel, TEntity> appFullService) : base(notifications)
+            IAppFullService<TViewModel> appFullService) : base(notifications)
         {
             this.appFullService = appFullService;
         }

@@ -14,11 +14,11 @@ namespace GiftBagOfBases.Models
         public override int GetHashCode()
         {
             return GetHashCodeCore()
-                     .Select(x => x?.GetHashCode() ?? 0)
+                     .Select(x => x.GetHashCode())
                      .Aggregate((x, y) => x ^ y);
         }
 
-        protected abstract IEnumerable<object> GetHashCodeCore();
+        protected abstract IEnumerable<int> GetHashCodeCore();
 
         public static bool operator ==(ValueObject<T> a, ValueObject<T> b)
         {

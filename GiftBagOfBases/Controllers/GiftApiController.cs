@@ -36,7 +36,7 @@ namespace GiftBagOfBases.Controllers
             {
                 success = false,
                 messages = _notifications.GetConfirmations().Select(x => x.Value),
-                errors = _notifications.GetNotifications().Select(n => n.Value)
+                errors = _notifications.GetErrors().Select(n => n.Value)
             });
         }
 

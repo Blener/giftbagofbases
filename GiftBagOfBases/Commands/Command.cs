@@ -14,6 +14,7 @@ namespace GiftBagOfBases.Commands
         protected Command()
         {
             Timestamp = DateTime.Now;
+            AggregateId = Guid.NewGuid();
         }
 
         public abstract bool IsValid();
