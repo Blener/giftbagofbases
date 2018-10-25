@@ -41,24 +41,24 @@ namespace GiftBagOfBases.Services.Application
 
         protected IEnumerable<TViewModel> MapGetForReturn(IQueryable<TEntity> entityQuery) => mapper.Map<IEnumerable<TViewModel>>(entityQuery);
 
-        public abstract void Add(TViewModel viewModel);
+        public abstract Task Add(TViewModel viewModel);
 
         public void Dispose()
         {
             GC.SuppressFinalize(this);
         }
 
-        public abstract void Remove(Guid aggregateId);
+        public abstract Task Remove(Guid aggregateId);
 
-        public abstract void Restore(Guid aggregateId);
+        public abstract Task Restore(Guid aggregateId);
 
-        public abstract void Update(TViewModel viewModel);
+        public abstract Task Update(TViewModel viewModel);
 
-        protected void MapAndSendCommand<TCommand>(TViewModel viewModel) where TCommand : Command => bus.SendCommand(mapper.Map<TCommand>(viewModel));
+        protected Task MapAndSendCommand<TCommand>(TViewModel viewModel) where TCommand : Command => bus.SendCommand(mapper.Map<TCommand>(viewModel));
 
-        protected void MapAndSendCommand<TCommand>(Guid aggregateId) where TCommand : Command => bus.SendCommand(mapper.Map<TCommand>(aggregateId));
+        protected Task MapAndSendCommand<TCommand>(Guid aggregateId) where TCommand : Command => bus.SendCommand(mapper.Map<TCommand>(aggregateId));
 
-        protected void MapAndSendCommand<TCommand, TMethodViewModel>(TMethodViewModel viewModel)
+        protected Task MapAndSendCommand<TCommand, TMethodViewModel>(TMethodViewModel viewModel)
             where TCommand : Command where TMethodViewModel : GiftViewModel
             => bus.SendCommand(mapper.Map<TCommand>(viewModel));
     }

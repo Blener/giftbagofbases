@@ -11,18 +11,14 @@ namespace GiftBagOfBases.Repositories
     public abstract class QueryOnlyRepository<TEntity, TContext> : IQueryOnlyRepository<TEntity> where TEntity : Entity where TContext : DbContext
     {
         protected readonly TContext Db;
-        protected readonly DbSet<TEntity> DbSet;
+        protected DbSet<TEntity> DbSet => Db.Set<TEntity>();
 
         protected QueryOnlyRepository(TContext db)
         {
             Db = db;
         }
 
-        public void Dispose()
-        {
-            Db.Dispose();
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => GC.SuppressFinalize(this);
 
         public IQueryable<TEntity> GetAll()
         {

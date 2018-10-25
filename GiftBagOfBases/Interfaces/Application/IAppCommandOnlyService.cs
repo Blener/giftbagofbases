@@ -1,16 +1,17 @@
 ﻿using GiftBagOfBases.ViewModel;
 using System;
+using System.Threading.Tasks;
 
 namespace GiftBagOfBases.Interfaces.Application
 {
     public interface IAppCommandOnlyService<TViewModel> : IDisposable where TViewModel : GiftViewModel
     {
-        void Add(TViewModel viewModel);
+        Task Add(TViewModel viewModel);
 
-        void Update(TViewModel viewModel);
+        Task Update(TViewModel viewModel);
 
-        void Remove(Guid aggregateId);
+        Task Remove(Guid aggregateId);
 
-        void Restore(Guid aggregateId);
+        Task Restore(Guid aggregateId);
     }
 }

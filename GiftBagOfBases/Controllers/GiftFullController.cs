@@ -36,7 +36,7 @@ namespace GiftBagOfBases.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add([FromBody] TViewModel viewModel)
+        public async Task<IActionResult> Add([FromBody] TViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -44,12 +44,12 @@ namespace GiftBagOfBases.Controllers
                 return Response(viewModel);
             }
 
-            appFullService.Add(viewModel);
+            await appFullService.Add(viewModel);
             return Response(viewModel);
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody]TViewModel viewModel)
+        public async Task<IActionResult> Update([FromBody]TViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -57,7 +57,7 @@ namespace GiftBagOfBases.Controllers
                 return Response(viewModel);
             }
 
-            appFullService.Update(viewModel);
+            await appFullService.Update(viewModel);
             return Response(viewModel);
         }
     }

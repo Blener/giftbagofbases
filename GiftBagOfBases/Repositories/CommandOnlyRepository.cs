@@ -9,7 +9,7 @@ namespace GiftBagOfBases.Repositories
     public abstract class CommandOnlyRepository<TEntity, TContext> : ICommandOnlyRepository<TEntity> where TEntity : Entity where TContext : DbContext
     {
         protected readonly TContext Db;
-        protected readonly DbSet<TEntity> DbSet;
+        protected DbSet<TEntity> DbSet => Db.Set<TEntity>();
 
         protected CommandOnlyRepository(TContext db)
         {
@@ -18,7 +18,7 @@ namespace GiftBagOfBases.Repositories
 
         public void Add(TEntity obj)
         {
-            DbSet.AddAsync(obj);
+            DbSet.Add(obj);
         }
 
         public void AddRelation<TRelation>(TRelation relation) where TRelation : Entity
@@ -26,11 +26,7 @@ namespace GiftBagOfBases.Repositories
             Db.Set<TRelation>().Add(relation);
         }
 
-        public void Dispose()
-        {
-            Db.Dispose();
-            GC.SuppressFinalize(this);
-        }
+        public void Dispose() => GC.SuppressFinalize(this);
 
         public async Task Remove(Guid id)
         {

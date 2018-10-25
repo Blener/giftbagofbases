@@ -4,9 +4,9 @@
     {
         public bool SoftDeleted { get; protected set; }
 
-        protected bool Deleted => true;
+        protected bool IAmDeleted => true;
 
-        protected bool NotDeleted => false;
+        protected bool IAmNotDeleted => false;
 
         public void Rebirth() => SoftDeleted = false;
     }
